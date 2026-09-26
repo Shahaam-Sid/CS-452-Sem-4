@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.shahaam</groupId>
-	<artifactId>urlshortener</artifactId>
+	<artifactId>equipend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>urlshortener</name>
+	<name>equipend</name>
 	<description/>
 	<url/>
 	<licenses>
