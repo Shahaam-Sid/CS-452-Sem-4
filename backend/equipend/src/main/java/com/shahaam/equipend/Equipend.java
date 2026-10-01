@@ -1,4 +1,4 @@
-package com.shahaam.urlshortener;
+package com.shahaam.equipend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
