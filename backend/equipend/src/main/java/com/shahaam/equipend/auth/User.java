@@ -18,7 +18,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import com.shahaam.equipend.exceptions.InvalidAccountCreationTime;
 import com.shahaam.equipend.exceptions.InvalidDOBException;
