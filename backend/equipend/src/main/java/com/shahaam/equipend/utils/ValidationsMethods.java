@@ -1,7 +1,10 @@
 package com.shahaam.equipend.utils;
 
+import java.time.Instant;
+
 import com.shahaam.equipend.exceptions.InvalidEmailException;
 import com.shahaam.equipend.exceptions.InvalidPasswordException;
+import com.shahaam.equipend.exceptions.InvalidTimeException;
 
 public class ValidationsMethods {
     public static void checkNullObject(Object obj, String field) {
@@ -58,5 +61,10 @@ public class ValidationsMethods {
     public static void isAlphaNumericUnderscoreDot(String str, String field) {
         if (!str.matches("^[a-zA-Z0-9_.]+$"))
             throw new IllegalArgumentException(field + " must only contain AlphaNumric Characters, '_' or '.'");
+    }
+
+    public static void checkTimeStamp(Instant time, Instant checkAgainst, String msg) {
+        if (time.isAfter(checkAgainst))
+            throw new InvalidTimeException(msg);
     }
 }
