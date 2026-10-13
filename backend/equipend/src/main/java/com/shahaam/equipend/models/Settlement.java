@@ -65,7 +65,7 @@ public class Settlement {
         setGeneratedSettlementID();
         setNote(note);
         setAmount(amount);
-        setPaidBy(paidTo);
+        setPaidTo(paidTo);
         setPaidBy(paidBy);
         setGroup(group);
     }

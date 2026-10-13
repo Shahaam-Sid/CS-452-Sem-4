@@ -13,7 +13,7 @@ public record GroupResponseDTO(
 
     String currency,
 
-    String createdBy,
+    UUID createdBy,
 
     Instant createdAt
 ) {}

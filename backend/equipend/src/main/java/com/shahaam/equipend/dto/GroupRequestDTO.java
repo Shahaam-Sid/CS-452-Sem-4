@@ -1,6 +1,9 @@
 package com.shahaam.equipend.dto;
 
+import java.util.UUID;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record GroupRequestDTO(
@@ -16,8 +19,6 @@ public record GroupRequestDTO(
     @Size(min = 1, max = 10, message = "Currency must be 1 - 10 characters long")
     String currency,
 
-    @NotBlank(message = "Username cannot be empty")
-    @Size(min = 3, max = 50, message = "Username must contain 3 - 50 characters")
-    String username
-
+    @NotNull(message = "Created By cannot be Null")
+    UUID createdBy
 ) {}

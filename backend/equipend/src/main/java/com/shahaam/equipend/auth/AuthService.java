@@ -52,6 +52,7 @@ public class AuthService {
         );
     }
 
+    @Transactional(readOnly = true)
     public AuthenticationResponseDTO authenticate(AuthenticateRequestDTO req) {
 
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -68,6 +69,7 @@ public class AuthService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<SearchResultsDTO> lookUpSearch(String query) {
 
         if (query == null || query.trim().length() < MIN_SEARCH_LENGTH)

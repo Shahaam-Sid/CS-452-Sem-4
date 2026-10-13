@@ -45,6 +45,13 @@ public class GroupMember {
     @Column(name = "joined_at", nullable = false, updatable = false)
     private Instant joinedAt;
 
+    public GroupMember(Group group, User user) {
+        id.setGroupID(group.getGroupID());
+        id.setUserID(user.getUserID());
+        setGoup(group);
+        setUser(user);
+    }
+
     public void setGoup(Group group) {
         ValidationsMethods.checkNullObject(group, "Group");
 

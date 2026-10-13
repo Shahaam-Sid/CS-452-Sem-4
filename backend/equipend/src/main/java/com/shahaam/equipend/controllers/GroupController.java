@@ -3,7 +3,7 @@ package com.shahaam.equipend.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.shahaam.equipend.Services.GroupService;
+import com.shahaam.equipend.services.GroupService;
 
 import lombok.RequiredArgsConstructor;
 
