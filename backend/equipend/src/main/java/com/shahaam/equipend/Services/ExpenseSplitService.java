@@ -69,7 +69,7 @@ public class ExpenseSplitService {
         Expense expense = expRepo.findById(req.expense())
         .orElseThrow(() -> new RecordNotFoundException("Expense", req.expense().toString()));
 
-        return new ExpenseSplit(expense, user);
+        return new ExpenseSplit(expense, user, req.shareAmount());
     }
     protected ExpenseSplitResponseDTO mapToExpenseSplitResponseDTO(ExpenseSplit split) {
 

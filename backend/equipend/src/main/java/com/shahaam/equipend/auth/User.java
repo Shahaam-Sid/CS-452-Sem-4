@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import com.shahaam.equipend.exceptions.InvalidDOBException;
+import com.shahaam.equipend.exceptions.InvalidDomainException;
+import com.shahaam.equipend.utils.AppConstants;
 import com.shahaam.equipend.utils.UtilityMethods;
 import com.shahaam.equipend.utils.ValidationsMethods;
 
@@ -127,6 +129,10 @@ public class User implements UserDetails {
     public void setCountry(String country) {
         ValidationsMethods.checkNullString(country, "Country");
         ValidationsMethods.checkLengthString(country, 3, 50, "Country");
+        country = country.toLowerCase();
+
+        if (!AppConstants.COUNTRIES.contains(country))
+            throw new InvalidDomainException("Country", country);
 
         this.country = country;
     }

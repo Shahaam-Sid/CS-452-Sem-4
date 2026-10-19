@@ -1,5 +1,6 @@
 package com.shahaam.equipend.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,10 +11,12 @@ import com.shahaam.equipend.auth.User;
 import com.shahaam.equipend.auth.UserRepository;
 import com.shahaam.equipend.dto.SettlementRequestDTO;
 import com.shahaam.equipend.dto.SettlementResponseDTO;
+import com.shahaam.equipend.exceptions.AmountMismatchExpection;
 import com.shahaam.equipend.exceptions.RecordNotFoundException;
 import com.shahaam.equipend.interfaces.ServicesInterface;
 import com.shahaam.equipend.models.Group;
 import com.shahaam.equipend.models.Settlement;
+import com.shahaam.equipend.repositories.ExpenseSplitsRepository;
 import com.shahaam.equipend.repositories.GroupsRepository;
 import com.shahaam.equipend.repositories.SettlementsRepository;
 
@@ -25,6 +28,7 @@ public class SettlementService implements ServicesInterface<SettlementResponseDT
     private final SettlementsRepository settlementRepo;
     private final UserRepository userRepo;
     private final GroupsRepository groupRepo;
+    private final ExpenseSplitsRepository expSpltRepo;
 
     @Override
     @Transactional(readOnly = true)
@@ -47,6 +51,16 @@ public class SettlementService implements ServicesInterface<SettlementResponseDT
 
         if (!groupRepo.existsById(req.group()))
             throw new RecordNotFoundException("Group", req.group().toString());
+
+        BigDecimal allSplits = expSpltRepo.allRecordedSplitsBetween(req.paidBy(), req.paidTo());
+
+        if (allSplits.equals(BigDecimal.ZERO))
+            throw new AmountMismatchExpection(req.paidBy().toString(), req.paidTo().toString());
+        
+        BigDecimal allSettlements = settlementRepo.allRecordedSettlementBetween(req.paidBy(), req.paidTo());
+
+        if (allSettlements.add(req.amount()).compareTo(allSplits) > 0)
+            throw new AmountMismatchExpection(req.paidBy().toString(), req.paidTo().toString());
 
         Settlement settlement = mapFromSettlementRequestDTO(req);
 

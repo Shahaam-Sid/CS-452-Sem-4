@@ -1,6 +1,8 @@
 package com.shahaam.equipend.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.shahaam.equipend.enums.SplitType;
@@ -26,5 +28,10 @@ public record ExpenseRequestDTO(
     UUID paidBy,
 
     @NotNull(message = "Split Type cannot be Null")
-    SplitType splitType
+    SplitType splitType,
+
+    List<UUID> participants,
+
+    Map<UUID, BigDecimal> participantShare
+    
 ) {}

@@ -12,7 +12,8 @@ import com.shahaam.equipend.dto.GroupResponseDTO;
 import com.shahaam.equipend.exceptions.RecordNotFoundException;
 import com.shahaam.equipend.interfaces.ServicesInterface;
 import com.shahaam.equipend.models.Group;
-import com.shahaam.equipend.repositories.ExpensesRepository;
+import com.shahaam.equipend.models.GroupMember;
+import com.shahaam.equipend.repositories.GroupMembersRepository;
 import com.shahaam.equipend.repositories.GroupsRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GroupService implements ServicesInterface<GroupResponseDTO, GroupRequestDTO, Void> {
     private final GroupsRepository groupRepo;
-    private final ExpensesRepository expenseRepo;
     private final UserRepository userRepo;
+    private final GroupMembersRepository grpMemRepo;
 
     @Override
     @Transactional 
@@ -34,6 +35,8 @@ public class GroupService implements ServicesInterface<GroupResponseDTO, GroupRe
         Group group = mapFromGroupRequestDTO(req);
 
         groupRepo.save(group);
+
+        grpMemRepo.save(new GroupMember(group, group.getCreatedBy()));
 
         return mapToGroupResponseDTO(group);
     }
@@ -48,8 +51,6 @@ public class GroupService implements ServicesInterface<GroupResponseDTO, GroupRe
 
         return mapToGroupResponseDTO(group);
     }
-
-    
 
     protected Group mapFromGroupRequestDTO(GroupRequestDTO req) {
 

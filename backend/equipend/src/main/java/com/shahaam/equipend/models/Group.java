@@ -8,6 +8,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import com.shahaam.equipend.auth.User;
+import com.shahaam.equipend.exceptions.InvalidDomainException;
+import com.shahaam.equipend.utils.AppConstants;
 import com.shahaam.equipend.utils.UtilityMethods;
 import com.shahaam.equipend.utils.ValidationsMethods;
 
@@ -86,6 +88,9 @@ public class Group {
     public void setCurrency(String currency) {
         ValidationsMethods.checkNullString(currency, "Currency");
         ValidationsMethods.checkLengthString(currency, 1,10, "Currency");
+        currency = currency.toLowerCase();
+        if (!AppConstants.CURRENCIES.containsKey(currency))
+            throw new InvalidDomainException("Currency", currency);
 
         this.currency = currency;
     }

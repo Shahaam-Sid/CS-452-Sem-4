@@ -38,16 +38,16 @@ public class ExpenseSplit {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public ExpenseSplit(Expense expense, User user) {
+    @Column(name = "share_amount", nullable = false, precision = 12, scale = 2)
+    private BigDecimal shareAmount;
+
+    public ExpenseSplit(Expense expense, User user, BigDecimal shareAmount) {
         id.setExpenseID(expense.getExpenseID());
         id.setUserID(user.getUserID());
         setExpense(expense);
         setUser(user);
         setShareAmount(shareAmount);
     }
-
-    @Column(name = "share_amount", nullable = false, precision = 12, scale = 2)
-    private BigDecimal shareAmount;
 
     public void setExpense(Expense expense) {
         ValidationsMethods.checkNullObject(expense, "Expense");
