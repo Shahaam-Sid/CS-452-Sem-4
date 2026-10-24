@@ -1,10 +1,10 @@
-package com.shahaam.urlshortener;
+package com.shahaam.equipend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UrlshortenerApplicationTests {
+class EquipendApplicationTests {
 
 	@Test
 	void contextLoads() {

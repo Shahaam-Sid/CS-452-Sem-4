@@ -16,7 +16,7 @@ public interface SettlementsRepository extends JpaRepository<Settlement, UUID> {
 
     List<Settlement> findByGroup_GroupID(UUID groupID);
 
-    List<Settlement> findByPaidto_UserID(UUID userID);
+    List<Settlement> findByPaidTo_UserID(UUID userID);
 
     List<Settlement> findByPaidBy_UserID(UUID userID);
 

@@ -24,6 +24,10 @@ public class UtilityMethods {
             throw new IllegalArgumentException("Participant list cannot be empty.");
         }
 
+        if (!participants.contains(payer)) {
+            throw new IllegalArgumentException("Payer must be included in the participants list.");
+        }
+
         int totalParticipants = participants.size();
         Map<UUID, BigDecimal> shares = new HashMap<>();
 
@@ -48,9 +52,6 @@ public class UtilityMethods {
         // 4. If there is a remainder (e.g., 0.01), assign it to the payer
         if (remainder.compareTo(BigDecimal.ZERO) > 0) {
             BigDecimal payerShare = shares.get(payer);
-            if (payerShare == null) {
-                throw new IllegalArgumentException("Payer must be included in the participants list.");
-            }
             shares.put(payer, payerShare.add(remainder));
         }
 

@@ -82,7 +82,7 @@ public class SettlementService implements ServicesInterface<SettlementResponseDT
 
     @Transactional(readOnly = true)
     public List<SettlementResponseDTO> getByPaidTo(UUID userID) {
-        return settlementRepo.findByPaidto_UserID(userID).stream()
+        return settlementRepo.findByPaidTo_UserID(userID).stream()
         .map(this::mapToSettlementResponseDTO).toList();
     }
 

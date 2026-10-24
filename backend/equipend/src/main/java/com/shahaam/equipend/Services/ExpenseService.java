@@ -1,8 +1,6 @@
 package com.shahaam.equipend.services;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +12,6 @@ import com.shahaam.equipend.auth.User;
 import com.shahaam.equipend.auth.UserRepository;
 import com.shahaam.equipend.dto.ExpenseRequestDTO;
 import com.shahaam.equipend.dto.ExpenseResponseDTO;
-import com.shahaam.equipend.enums.SplitType;
 import com.shahaam.equipend.exceptions.AmountMismatchExpection;
 import com.shahaam.equipend.exceptions.MemberNotInGroupException;
 import com.shahaam.equipend.exceptions.RecordNotFoundException;

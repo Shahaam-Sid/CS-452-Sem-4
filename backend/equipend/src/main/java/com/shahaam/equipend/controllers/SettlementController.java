@@ -46,7 +46,7 @@ public class SettlementController {
     ) {
         return ResponseEntity.ok(ss.countGroupSettlements(UUID.fromString(id)));
     }
-    @GetMapping("/group/{id)")
+    @GetMapping("/group/{id}")
     public ResponseEntity<List<SettlementResponseDTO>> getGroupSettlementd(
         @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
         String id
