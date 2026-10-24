@@ -83,8 +83,9 @@ public class Settlement {
             ValidationsMethods.checkLengthString(note, 1, 255, "Note");
             
             this.note = note;
+        } else {
+            this.note = "";
         }
-        this.note = "";
     }
     public void setAmount(BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) < 0)

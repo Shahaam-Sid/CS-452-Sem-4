@@ -121,7 +121,7 @@ public class Expense {
     public void setPaidBy(User user) {
         ValidationsMethods.checkNullObject(user, "Expense Paid By");
 
-        this.createdBy = user;
+        this.paidBy = user;
     }
     public void setSplitType(SplitType splitType) {
 

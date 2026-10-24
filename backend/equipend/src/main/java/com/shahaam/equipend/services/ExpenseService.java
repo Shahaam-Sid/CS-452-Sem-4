@@ -85,7 +85,7 @@ public class ExpenseService implements ServicesInterface<ExpenseResponseDTO, Exp
                 shares = req.participantShare();
 
                 for (BigDecimal share : shares.values()) {
-                    total.add(share);
+                    total = total.add(share);
                 }
 
                 if (!total.equals(req.amount()))
@@ -97,7 +97,7 @@ public class ExpenseService implements ServicesInterface<ExpenseResponseDTO, Exp
 
         shares.remove(req.paidBy());
 
-        shares.entrySet().stream().map(
+        shares.entrySet().stream().forEach(
             entry -> expSplitRepo.save(mapFromExpenseSplitRequest(
                 entry.getKey(), expense.getExpenseID(), entry.getValue()
             ))

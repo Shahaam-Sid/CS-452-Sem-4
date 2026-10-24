@@ -59,6 +59,8 @@ public class GroupMember {
     }
     public void setUser(User user) {
         ValidationsMethods.checkNullObject(user, "User");
+
+        this.user = user;
     }
     public void setJoinedAt(Instant joinedAt) {
         ValidationsMethods.checkNullObject(joinedAt, "Timestamp");
