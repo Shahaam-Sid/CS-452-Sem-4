@@ -1,10 +1,10 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "./auth-context";
+import { TOKEN_KEY, UNAUTHORIZED_EVENT } from "../../api/axios";
 
-const TOKEN_KEY = "token";
 const MAX_TIMEOUT = 2 ** 31 - 1; // setTimeout overflows above this
-
-export const AuthContext = createContext(null);
 
 // The ONE place that maps JWT claims to the user object. Edit to match your backend.
 const mapClaimsToUser = (claims) => ({
@@ -34,27 +34,35 @@ function readStoredAuth() {
 }
 
 export function AuthProvider({ children }) {
+  const queryClient = useQueryClient();
   const [auth, setAuth] = useState(readStoredAuth);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
+    queryClient.clear(); // never show one user's cached data to the next
     setAuth({ token: null, user: null });
-  }, []);
+  }, [queryClient]);
 
   const login = useCallback((token) => {
     const claims = jwtDecode(token); // throws if the token is malformed
+    if (isExpired(claims)) throw new Error("Token has already expired");
     localStorage.setItem(TOKEN_KEY, token);
     setAuth({ token, user: mapClaimsToUser(claims), exp: claims.exp });
   }, []);
 
-  // auto-logout the moment the token expires
+  // schedule an auto-logout for the moment the token expires
   useEffect(() => {
     if (!auth.exp) return;
-    const ms = auth.exp * 1000 - Date.now();
-    if (ms <= 0) return logout();
-    const id = setTimeout(logout, Math.min(ms, MAX_TIMEOUT));
+    const ms = Math.min(Math.max(0, auth.exp * 1000 - Date.now()), MAX_TIMEOUT);
+    const id = setTimeout(logout, ms);
     return () => clearTimeout(id);
   }, [auth.exp, logout]);
+
+  // the API layer fires this event when the server rejects our token
+  useEffect(() => {
+    window.addEventListener(UNAUTHORIZED_EVENT, logout);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, logout);
+  }, [logout]);
 
   const value = useMemo(
     () => ({ user: auth.user, token: auth.token, isAuthenticated: !!auth.token, login, logout }),

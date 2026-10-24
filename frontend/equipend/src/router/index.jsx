@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
-import RootLayout from "../layouts/RootLayout";
-import DashboardLayout from "../layouts/DashboardLayout";
+import RootLayout from "../components/layouts/RootLayout";
+import DashboardLayout from "../components/layouts/DashboardLayout";
 import RootRedirect from "../components/RootRedirect";
 import GuestOnlyRoute from "../components/GuestOnlyRoute";
 import ProtectedRoute from "../components/ProtectedRoute";

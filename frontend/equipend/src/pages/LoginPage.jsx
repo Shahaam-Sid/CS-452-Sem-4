@@ -1,23 +1,36 @@
-import { useNavigate } from "react-router-dom";
-import AuthLayout from "../components/layout/AuthLayout";
-import Button from "../components/ui/Button";
+import { Link, useLocation } from "react-router-dom";
+import AuthLayout from "../components/layouts/AuthLayout";
+import LoginForm from "../components/forms/LoginForm";
+import Alert from "../components/ui/Alert";
 import useAuth from "../hooks/useAuth";
+import { authenticate } from "../api/authApi";
 import { APP_NAME } from "../config/app";
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const location = useLocation();
 
-  const devLogin = () => {
-    const payload = { sub: "demo", email: "demo@example.com", exp: Math.floor(Date.now() / 1000) + 3600 };
-    login(`x.${btoa(JSON.stringify(payload))}.x`);
-    navigate("/dashboard", { replace: true });
+  const handleLogin = async (values) => {
+    const token = await authenticate(values);
+    login(token); // GuestOnlyRoute redirects as soon as auth state flips
   };
 
   return (
     <AuthLayout brand={APP_NAME} tagline="Log in to continue">
-      <p className="mb-4 text-sm text-gray-500">Login form coming in the forms batch.</p>
-      <Button fullWidth onClick={devLogin}>Dev: fake login</Button>
+      {location.state?.from && (
+        <Alert variant="info" className="mb-4">Please log in to continue.</Alert>
+      )}
+      <LoginForm
+        onSubmit={handleLogin}
+        footer={
+          <p className="text-center text-sm text-gray-500">
+            No account?{" "}
+            <Link to="/signup" state={location.state} className="font-medium text-brand-700 hover:underline">
+              Sign up
+            </Link>
+          </p>
+        }
+      />
     </AuthLayout>
   );
 }

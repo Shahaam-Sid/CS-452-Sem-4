@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useLocation, useMatches, useNavigate } from "react-router-dom";
-import Sidebar from "../components/layout/Sidebar";
-import Topbar from "../components/layout/Topbar";
-import Footer from "../components/layout/Footer";
-import useAuth from "../hooks/useAuth";
-import { dashboardLinks } from "../config/navLinks";
-import { APP_NAME, GITHUB_URL } from "../config/app";
+import Sidebar from "./Sidebar";
+import Topbar from "./Topbar";
+import Footer from "./Footer";
+import useAuth from "../../hooks/useAuth";
+import { dashboardLinks } from "../../config/navLinks";
+import { APP_NAME, GITHUB_URL } from "../../config/app";
 
 export default function DashboardLayout({
   links = dashboardLinks,
