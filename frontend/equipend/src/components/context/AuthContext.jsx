@@ -4,15 +4,22 @@ import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "./auth-context";
 import { TOKEN_KEY, UNAUTHORIZED_EVENT } from "../../api/axios";
 
+const USER_KEY = "user";
 const MAX_TIMEOUT = 2 ** 31 - 1; // setTimeout overflows above this
 
-// The ONE place that maps JWT claims to the user object. Edit to match your backend.
-const mapClaimsToUser = (claims) => ({
-  id: claims.userId ?? null,
-  username: claims.sub,
-  email: claims.email ?? null,
-  name: claims.name ?? claims.sub,
+// Maps the login/signup response to the user object used across the app.
+const mapAuthResponse = (r) => ({
+  id: r.userID ?? r.userId ?? null,
+  username: r.username,
+  fullName: r.fullName,
+  email: r.email ?? null,
+  name: r.fullName ?? r.username, // shown in the Topbar
 });
+
+const clearStorage = () => {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+};
 
 const isExpired = (claims) => claims.exp && claims.exp * 1000 <= Date.now();
 
@@ -20,15 +27,19 @@ const isExpired = (claims) => claims.exp && claims.exp * 1000 <= Date.now();
 function readStoredAuth() {
   try {
     const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) return { token: null, user: null };
-    const claims = jwtDecode(token);
-    if (isExpired(claims)) {
-      localStorage.removeItem(TOKEN_KEY);
+    const user = JSON.parse(localStorage.getItem(USER_KEY) ?? "null");
+    if (!token || !user?.id) {
+      clearStorage();
       return { token: null, user: null };
     }
-    return { token, user: mapClaimsToUser(claims), exp: claims.exp };
+    const claims = jwtDecode(token);
+    if (isExpired(claims)) {
+      clearStorage();
+      return { token: null, user: null };
+    }
+    return { token, user, exp: claims.exp };
   } catch {
-    localStorage.removeItem(TOKEN_KEY);
+    clearStorage();
     return { token: null, user: null };
   }
 }
@@ -38,16 +49,22 @@ export function AuthProvider({ children }) {
   const [auth, setAuth] = useState(readStoredAuth);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
+    clearStorage();
     queryClient.clear(); // never show one user's cached data to the next
     setAuth({ token: null, user: null });
   }, [queryClient]);
 
-  const login = useCallback((token) => {
-    const claims = jwtDecode(token); // throws if the token is malformed
+  // `response` is the login/signup DTO: { userID, username, fullName, email, token }
+  const login = useCallback((response) => {
+    if (!response?.token) throw new Error("The server did not send a token.");
+    const user = mapAuthResponse(response);
+    if (!user.id) throw new Error("The server did not send a user id.");
+    const claims = jwtDecode(response.token);
     if (isExpired(claims)) throw new Error("Token has already expired");
-    localStorage.setItem(TOKEN_KEY, token);
-    setAuth({ token, user: mapClaimsToUser(claims), exp: claims.exp });
+
+    localStorage.setItem(TOKEN_KEY, response.token);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    setAuth({ token: response.token, user, exp: claims.exp });
   }, []);
 
   // schedule an auto-logout for the moment the token expires

@@ -9,8 +9,8 @@ import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
 import Dashboard from "../pages/Dashboard";
 import Groups from "../pages/Groups";
+import GroupDetail from "../pages/GroupDetail";
 import Expenses from "../pages/Expenses";
-import SettleUp from "../pages/SettleUp";
 
 export const router = createBrowserRouter([
   {
@@ -27,8 +27,8 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Dashboard />, handle: { title: "Dashboard" } },
           { path: "groups", element: <Groups />, handle: { title: "Groups" } },
+          { path: "groups/:groupId", element: <GroupDetail />, handle: { title: "Group Details" } },
           { path: "expenses", element: <Expenses />, handle: { title: "Expenses" } },
-          { path: "settle", element: <SettleUp />, handle: { title: "Settle Up" } },
         ],
       },
     ],

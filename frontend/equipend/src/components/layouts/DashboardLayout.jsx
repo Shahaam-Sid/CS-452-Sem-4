@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Outlet, useLocation, useMatches, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
@@ -17,17 +17,18 @@ export default function DashboardLayout({
   footerLinks = [{ label: "GitHub", href: GITHUB_URL }],
   logoutRedirect = "/door-step",
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { pathname } = useLocation();
   const matches = useMatches();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
+  // The drawer remembers WHICH path it was opened on. When the route changes the two
+  // stop matching, so it counts as closed. No effect needed.
+  const [drawerPath, setDrawerPath] = useState(null);
+  const sidebarOpen = drawerPath === pathname;
+
   // title comes from the deepest matched route that defines handle.title
   const title = [...matches].reverse().find((m) => m.handle?.title)?.handle.title ?? "";
-
-  // close the mobile drawer whenever the route changes
-  useEffect(() => setSidebarOpen(false), [pathname]);
 
   const handleLogout = () => {
     logout();
@@ -40,7 +41,7 @@ export default function DashboardLayout({
         links={links}
         brand={brand}
         open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+        onClose={() => setDrawerPath(null)}
         footer={sidebarFooter}
       />
 
@@ -51,7 +52,7 @@ export default function DashboardLayout({
           onLogout={handleLogout}
           menuItems={userMenuItems}
           rightSlot={topbarRight}
-          onMenuClick={() => setSidebarOpen(true)}
+          onMenuClick={() => setDrawerPath(pathname)}
         />
         <main className="flex-1 p-4 sm:p-6">
           <div className="mx-auto max-w-6xl">

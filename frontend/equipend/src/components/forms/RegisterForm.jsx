@@ -93,7 +93,7 @@ export default function RegisterForm({
         <Select
           label="Country"
           placeholder="Select country"
-          options={countries.map((c) => ({ value: c, label: c }))}
+          options={countries.map((c) => ({ value: c.toLowerCase(), label: c }))}
           error={errors.country?.message}
           {...register("country", { required: "Select your country" })}
         />

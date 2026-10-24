@@ -11,8 +11,8 @@ export default function LoginPage() {
   const location = useLocation();
 
   const handleLogin = async (values) => {
-    const token = await authenticate(values);
-    login(token); // GuestOnlyRoute redirects as soon as auth state flips
+    const response = await authenticate(values);
+    login(response); // GuestOnlyRoute redirects as soon as auth state flips
   };
 
   return (

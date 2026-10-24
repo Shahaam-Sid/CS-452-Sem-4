@@ -10,8 +10,8 @@ export default function SignupPage() {
   const location = useLocation();
 
   const handleRegister = async (payload) => {
-    const token = await registerUser(payload);
-    login(token); // auto-login; GuestOnlyRoute then redirects
+    const response = await registerUser(payload);
+    login(response); // auto-login; GuestOnlyRoute then redirects
   };
 
   return (
