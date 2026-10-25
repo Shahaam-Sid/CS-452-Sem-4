@@ -7,8 +7,6 @@ const ENDPOINTS = {
   membershipsOfUser: (userId) => `/member/user/${userId}`,
   membersOfGroup: (groupId) => `/member/group/${groupId}`,
   addMember: "/member",
-  // ASSUMPTION: the user search controller wasn't in what you sent. Change to the real path.
-  searchUsers: "/user/search",
 };
 
 // Spring returns either a plain array or a Page object with a `content` array.
@@ -31,15 +29,6 @@ export function normalizeGroup(raw = {}) {
 
 export function normalizeMembership(raw = {}) {
   return { userId: idOf(raw.user), groupId: idOf(raw.group), joinedAt: raw.joinedAt ?? null };
-}
-
-export function normalizeUser(raw = {}) {
-  return {
-    id: raw.userID ?? raw.id ?? null,
-    fullName: raw.fullName ?? raw.username ?? "Unknown",
-    username: raw.username ?? null,
-    email: raw.email ?? null,
-  };
 }
 
 export async function getGroup(id) {
@@ -71,9 +60,4 @@ export async function getMyGroups(userId) {
 export async function addGroupMember(groupId, userId) {
   const { data } = await api.post(ENDPOINTS.addMember, { user: userId, group: groupId });
   return normalizeMembership(data);
-}
-
-export async function searchUsers(query) {
-  const { data } = await api.get(ENDPOINTS.searchUsers, { params: { query } });
-  return unwrapList(data).map(normalizeUser);
 }

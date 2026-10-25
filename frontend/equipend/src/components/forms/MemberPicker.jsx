@@ -4,7 +4,7 @@ import Input from "../ui/Input";
 import Avatar from "../ui/Avatar";
 import Spinner from "../ui/Spinner";
 import useDebounce from "../../hooks/useDebounce";
-import { useUserSearch } from "../../hooks/useGroups";
+import { useUserSearch } from "../../hooks/useUsers";
 import { cn } from "../../utils/cn";
 
 // Controlled: the parent owns `selected` (array of users) and receives changes via onChange.

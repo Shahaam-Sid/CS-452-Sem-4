@@ -5,7 +5,6 @@ import {
   getGroup,
   getGroupMembers,
   getMyGroups,
-  searchUsers,
 } from "../api/groupsApi";
 import useAuth from "./useAuth";
 
@@ -14,7 +13,6 @@ export const groupKeys = {
   mine: (userId) => ["groups", "mine", userId],
   detail: (id) => ["groups", "detail", id],
   members: (id) => ["groups", "detail", id, "members"],
-  userSearch: (term) => ["users", "search", term],
 };
 
 export function useMyGroups() {
@@ -56,11 +54,3 @@ export function useAddMember(groupId) {
     onSuccess: () => qc.invalidateQueries({ queryKey: groupKeys.all }),
   });
 }
-
-export const useUserSearch = (term) =>
-  useQuery({
-    queryKey: groupKeys.userSearch(term),
-    queryFn: () => searchUsers(term),
-    enabled: term.trim().length >= 2,
-    staleTime: 60_000,
-  });

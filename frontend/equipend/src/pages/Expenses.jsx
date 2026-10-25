@@ -8,6 +8,7 @@ import ExpenseList from "../components/expenses/ExpenseList";
 import useAuth from "../hooks/useAuth";
 import { useMyGroups } from "../hooks/useGroups";
 import { useMyShares, usePaidExpenses } from "../hooks/useExpenses";
+import { useUserDirectory } from "../hooks/useUsers";
 
 export default function Expenses() {
   const { user } = useAuth();
@@ -16,13 +17,16 @@ export default function Expenses() {
   const paid = usePaidExpenses();
   const groups = useMyGroups();
 
+  const active = tab === "shares" ? shares : paid;
+
+  // names of whoever paid the expenses currently shown
+  const directory = useUserDirectory((active.data ?? []).map((e) => e.paidBy));
+
   // group names and currencies come from the groups list: no extra requests
   const groupById = useMemo(
     () => new Map((groups.data ?? []).map((g) => [g.id, g])),
     [groups.data]
   );
-
-  const active = tab === "shares" ? shares : paid;
 
   const getItemProps = (e) => {
     const g = groupById.get(e.groupId);
@@ -32,6 +36,7 @@ export default function Expenses() {
       currentUserId: user?.id,
       share: e.myShare, // undefined on the "Paid by me" tab
       to: `/dashboard/groups/${e.groupId}`,
+      getDisplayName: directory.displayName,
     };
   };
 

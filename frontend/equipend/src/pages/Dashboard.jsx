@@ -7,6 +7,7 @@ import BalanceList from "../components/balances/BalanceList";
 import useAuth from "../hooks/useAuth";
 import { useMyGroups } from "../hooks/useGroups";
 import { useTotalBalances } from "../hooks/useBalances";
+import { useUserDirectory } from "../hooks/useUsers";
 import { summarizeBalances } from "../utils/balances";
 import { formatCents, formatCurrencyCode } from "../utils/format";
 import { cn } from "../utils/cn";
@@ -26,6 +27,9 @@ export default function Dashboard() {
   const { user } = useAuth();
   const groups = useMyGroups();
   const balances = useTotalBalances();
+
+  // names for the people you owe or are owed by
+  const directory = useUserDirectory((balances.data ?? []).map((r) => r.userId));
 
   const groupNames = useMemo(
     () => new Map((groups.data ?? []).map((g) => [g.id, g.name])),
@@ -74,6 +78,8 @@ export default function Dashboard() {
           <BalanceList
             rows={balances.data}
             groupNames={groupNames}
+            getDisplayName={directory.displayName}
+            getAvatarName={directory.displayName}
             emptyText="No balances yet. Expenses and payments that involve you will show up here."
           />
         </>

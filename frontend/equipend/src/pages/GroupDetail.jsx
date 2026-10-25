@@ -19,6 +19,7 @@ import { useGroup, useGroupMembers } from "../hooks/useGroups";
 import { useGroupExpenses } from "../hooks/useExpenses";
 import { useGroupSettlements } from "../hooks/useSettlements";
 import { useGroupBalances } from "../hooks/useBalances";
+import { useUserDirectory } from "../hooks/useUsers";
 import { formatCurrencyCode, formatDate } from "../utils/format";
 
 export default function GroupDetail() {
@@ -32,6 +33,10 @@ export default function GroupDetail() {
   const expenses = useGroupExpenses(groupId);
   const settlements = useGroupSettlements(groupId);
   const balances = useGroupBalances(group.data); // waits until the group has loaded
+
+  // everyone who can appear in this group's expenses, payments and balances is a member
+  const directory = useUserDirectory((members.data ?? []).map((m) => m.userId));
+  const memberName = (m) => directory.displayName(m.userId);
 
   const back = (
     <Link
@@ -73,7 +78,11 @@ export default function GroupDetail() {
   }
 
   const g = group.data;
-  const itemProps = () => ({ currency: g.currency, currentUserId: user?.id });
+  const itemProps = () => ({
+    currency: g.currency,
+    currentUserId: user?.id,
+    getDisplayName: directory.displayName,
+  });
 
   return (
     <div className="space-y-6">
@@ -115,6 +124,8 @@ export default function GroupDetail() {
         {balances.data && (
           <BalanceList
             rows={balances.data}
+            getDisplayName={directory.displayName}
+            getAvatarName={directory.displayName}
             emptyText="No balances in this group yet. Expenses and payments that involve you will show up here."
           />
         )}
@@ -192,7 +203,14 @@ export default function GroupDetail() {
           </div>
         )}
         {members.isError && <Alert variant="error">{members.error.userMessage}</Alert>}
-        {members.data && <MemberList members={members.data} currentUserId={user?.id} />}
+        {members.data && (
+          <MemberList
+            members={members.data}
+            currentUserId={user?.id}
+            getDisplayName={memberName}
+            getUsername={(m) => directory.username(m.userId)}
+          />
+        )}
       </Card>
 
       <AddMemberModal
@@ -209,12 +227,14 @@ export default function GroupDetail() {
             onClose={() => setAddingExpense(false)}
             group={g}
             members={members.data}
+            getDisplayName={memberName}
           />
           <SettleUpModal
             open={settling}
             onClose={() => setSettling(false)}
             group={g}
             members={members.data}
+            getDisplayName={memberName}
           />
         </>
       )}
