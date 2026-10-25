@@ -1,8 +1,10 @@
 package com.shahaam.equipend.services;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -12,9 +14,13 @@ import com.shahaam.equipend.auth.User;
 import com.shahaam.equipend.auth.UserRepository;
 import com.shahaam.equipend.dto.ExpenseRequestDTO;
 import com.shahaam.equipend.dto.ExpenseResponseDTO;
+import com.shahaam.equipend.enums.SplitType;
 import com.shahaam.equipend.exceptions.AmountMismatchExpection;
+import com.shahaam.equipend.exceptions.DomainNullException;
+import com.shahaam.equipend.exceptions.InvalidAmountException;
 import com.shahaam.equipend.exceptions.MemberNotInGroupException;
 import com.shahaam.equipend.exceptions.RecordNotFoundException;
+import com.shahaam.equipend.exceptions.UserConflictException;
 import com.shahaam.equipend.interfaces.ServicesInterface;
 import com.shahaam.equipend.models.Expense;
 import com.shahaam.equipend.models.ExpenseSplit;
@@ -55,17 +61,49 @@ public class ExpenseService implements ServicesInterface<ExpenseResponseDTO, Exp
         if (!groupsRepo.existsById(req.groupID()))
             throw new RecordNotFoundException("Group", req.groupID().toString());
 
-        Expense expense = mapFromExpenseRequestDTO(req);
+        if (!grpMemRepo.existsByGroup_GroupIDAndUser_UserID(req.groupID(), req.createdBy()))
+            throw new MemberNotInGroupException(req.groupID().toString(), req.createdBy().toString());
 
-        expenseRepo.save(expense);
+        if (!grpMemRepo.existsByGroup_GroupIDAndUser_UserID(req.groupID(), req.createdBy()))
+            throw new MemberNotInGroupException(req.groupID().toString(), req.paidBy().toString());
 
-        expenseRepo.flush();
+        if (req.amount().compareTo(BigDecimal.ZERO) <= 0)
+            throw new InvalidAmountException("Expense Amount cannot be <= 0");
+
+        // Check if the size of the Set (unique items) is smaller than the List
+        Set<UUID> uniqueParticipants = new HashSet<>(req.participants());
+        if (uniqueParticipants.size() < req.participants().size()) {
+            throw new UserConflictException("Duplicate participant IDs are not allowed.");
+}
 
         boolean allInGrp = req.participants().stream().allMatch(
             id -> grpMemRepo.existsByGroup_GroupIDAndUser_UserID(req.groupID(), id)
         );
 
-        if (allInGrp == false) throw new MemberNotInGroupException("Some", "this");
+        if (req.splitType() != SplitType.EQUAL) {
+
+            if (req.participantShare() == null)
+                throw new DomainNullException("Participant Share");
+
+            boolean allPositive = req.participantShare().values().stream().allMatch(
+                amount -> amount.compareTo(BigDecimal.ZERO) <= 0
+            );
+            if (!allPositive) throw new InvalidAmountException("Participant Amount cannot be <= 0");
+
+            boolean allKeyInGrp = req.participantShare().keySet().stream().allMatch(
+                id -> grpMemRepo.existsByGroup_GroupIDAndUser_UserID(req.groupID(), id)
+            );
+
+             if (!allKeyInGrp) throw new MemberNotInGroupException("Some", "this");
+        }
+
+        if (!allInGrp) throw new MemberNotInGroupException("Some", "this");
+
+        Expense expense = mapFromExpenseRequestDTO(req);
+
+        expenseRepo.save(expense);
+
+        expenseRepo.flush();
 
         Map<UUID, BigDecimal> shares;
 
@@ -76,6 +114,7 @@ public class ExpenseService implements ServicesInterface<ExpenseResponseDTO, Exp
                 );
             }
             case PERCENTAGE -> {
+
                 shares = UtilityMethods.calculatePercentageSplit(
                     req.amount(), req.participantShare()
                 );
@@ -88,7 +127,7 @@ public class ExpenseService implements ServicesInterface<ExpenseResponseDTO, Exp
                     total = total.add(share);
                 }
 
-                if (!total.equals(req.amount()))
+                if (total.compareTo(req.amount()) != 0)
                     throw new AmountMismatchExpection();
             }
 

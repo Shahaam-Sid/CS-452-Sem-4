@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.shahaam.equipend.exceptions.DomainNotFoundException;
+import com.shahaam.equipend.exceptions.DomainNullException;
+import com.shahaam.equipend.exceptions.InvalidDomainException;
 
 public class UtilityMethods {
     
@@ -21,11 +24,11 @@ public class UtilityMethods {
             List<UUID> participants) {
         
         if (participants == null || participants.isEmpty()) {
-            throw new IllegalArgumentException("Participant list cannot be empty.");
+            throw new DomainNullException("Participant list");
         }
 
         if (!participants.contains(payer)) {
-            throw new IllegalArgumentException("Payer must be included in the participants list.");
+            throw new DomainNullException("Payer must be included in the participants list.");
         }
 
         int totalParticipants = participants.size();
@@ -63,7 +66,7 @@ public class UtilityMethods {
             Map<UUID, BigDecimal> participantPercentages) {
         
         if (participantPercentages == null || participantPercentages.isEmpty()) {
-            throw new IllegalArgumentException("Participant percentages cannot be empty.");
+            throw new DomainNotFoundException("Participant percentages");
         }
 
         // 1. Verify that the percentages sum up to 100%
@@ -73,7 +76,7 @@ public class UtilityMethods {
         }
         
         if (totalPercentage.compareTo(new BigDecimal("100.00")) != 0) {
-            throw new IllegalArgumentException("Percentages must sum up to exactly 100%. Total was: " + totalPercentage);
+            throw new InvalidDomainException("Percentage", totalPercentage.toString());
         }
 
         Map<UUID, BigDecimal> shares = new HashMap<>();
@@ -109,4 +112,5 @@ public class UtilityMethods {
 
         return shares;
     }
+    // => Percentage remainder goes to whichever participant the hash map iterates first, which is non-deterministic and may be the payer, whose share is then dropped. Give the remainder to the payer, as the equal split does, so behavior is consistent and predictable.
 }

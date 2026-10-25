@@ -102,7 +102,7 @@ public class Expense {
         this.createdAt = timestamp;
     }
     public void setAmount(BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountException("Expense Amount cannot <= 0");
         }
 

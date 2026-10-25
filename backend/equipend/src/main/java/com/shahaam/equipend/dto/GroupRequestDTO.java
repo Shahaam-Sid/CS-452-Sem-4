@@ -12,7 +12,7 @@ public record GroupRequestDTO(
     @Size(min = 1, max = 50, message = "Group Name must be 1 - 50 characters long")
     String name,
 
-    @Size(min = 0, max = 200, message = "Group Name can be 200 characters long")
+    @Size(min = 0, max = 200, message = "Group Description can be 200 characters long")
     String description,
 
     @NotBlank(message = "Currency cannot be blank")

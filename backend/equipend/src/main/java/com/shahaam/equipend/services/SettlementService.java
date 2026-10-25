@@ -12,11 +12,15 @@ import com.shahaam.equipend.auth.UserRepository;
 import com.shahaam.equipend.dto.SettlementRequestDTO;
 import com.shahaam.equipend.dto.SettlementResponseDTO;
 import com.shahaam.equipend.exceptions.AmountMismatchExpection;
+import com.shahaam.equipend.exceptions.InvalidAmountException;
+import com.shahaam.equipend.exceptions.MemberNotInGroupException;
 import com.shahaam.equipend.exceptions.RecordNotFoundException;
+import com.shahaam.equipend.exceptions.UserConflictException;
 import com.shahaam.equipend.interfaces.ServicesInterface;
 import com.shahaam.equipend.models.Group;
 import com.shahaam.equipend.models.Settlement;
 import com.shahaam.equipend.repositories.ExpenseSplitsRepository;
+import com.shahaam.equipend.repositories.GroupMembersRepository;
 import com.shahaam.equipend.repositories.GroupsRepository;
 import com.shahaam.equipend.repositories.SettlementsRepository;
 
@@ -28,6 +32,7 @@ public class SettlementService implements ServicesInterface<SettlementResponseDT
     private final SettlementsRepository settlementRepo;
     private final UserRepository userRepo;
     private final GroupsRepository groupRepo;
+    private final GroupMembersRepository grpMemRepo;
     private final ExpenseSplitsRepository expSpltRepo;
 
     @Override
@@ -43,27 +48,43 @@ public class SettlementService implements ServicesInterface<SettlementResponseDT
     @Override
     @Transactional
     public SettlementResponseDTO add(SettlementRequestDTO req) {
-        if (!userRepo.existsById(req.paidTo()))
-            throw new RecordNotFoundException("User", req.paidTo().toString());
-    
-        if (!userRepo.existsById(req.paidBy()))
-            throw new RecordNotFoundException("User", req.paidBy().toString());
 
-        if (!groupRepo.existsById(req.group()))
-            throw new RecordNotFoundException("Group", req.group().toString());
+        if (req.paidBy().equals(req.paidTo())) throw new UserConflictException();
 
-        BigDecimal allSplits = expSpltRepo.allRecordedSplitsBetween(req.paidBy(), req.paidTo());
+        if (req.amount().compareTo(BigDecimal.ZERO) <= 0)
+            throw new InvalidAmountException("Settlement Amount cannot be <= 0");
 
-        if (allSplits.equals(BigDecimal.ZERO))
-            throw new AmountMismatchExpection(req.paidBy().toString(), req.paidTo().toString());
-        
-        BigDecimal allSettlements = settlementRepo.allRecordedSettlementBetween(req.paidBy(), req.paidTo());
+        User paidBy = userRepo.findById(req.paidBy())
+            .orElseThrow(() -> new RecordNotFoundException("User", req.paidBy().toString()));
 
-        if (allSettlements.add(req.amount()).compareTo(allSplits) > 0)
-            throw new AmountMismatchExpection(req.paidBy().toString(), req.paidTo().toString());
+        User paidTo = userRepo.findById(req.paidTo())
+            .orElseThrow(() -> new RecordNotFoundException("User", req.paidTo().toString()));
 
-        Settlement settlement = mapFromSettlementRequestDTO(req);
+        Group group = groupRepo.findById(req.group())
+            .orElseThrow(() -> new RecordNotFoundException("Group", req.group().toString()));
 
+        if (!grpMemRepo.existsByGroup_GroupIDAndUser_UserID(req.group(), req.paidBy()))
+            throw new MemberNotInGroupException(req.paidBy().toString(), req.group().toString());
+
+        if (!grpMemRepo.existsByGroup_GroupIDAndUser_UserID(req.group(), req.paidTo()))
+            throw new MemberNotInGroupException(req.paidTo().toString(), req.group().toString());
+
+        UUID g = req.group();
+
+        BigDecimal owed = expSpltRepo.allRecordedSplitsBetween(g, req.paidTo(), req.paidBy());
+        BigDecimal settled = settlementRepo.allRecordedSettlementBetween(g, req.paidBy(), req.paidTo());
+
+        BigDecimal reverseOwed = expSpltRepo.allRecordedSplitsBetween(g, req.paidBy(), req.paidTo());
+        BigDecimal reverseSettled = settlementRepo.allRecordedSettlementBetween(g, req.paidTo(), req.paidBy());
+
+        BigDecimal outstanding = owed.subtract(settled)
+            .subtract(reverseOwed.subtract(reverseSettled));
+
+        if (req.amount().compareTo(outstanding) > 0)
+            throw new InvalidAmountException(
+                "Amount exceeds outstanding balance of " + outstanding.max(BigDecimal.ZERO));
+
+        Settlement settlement = new Settlement(req.note(), req.amount(), paidTo, paidBy, group);
         settlementRepo.save(settlement);
 
         return mapToSettlementResponseDTO(settlement);
@@ -127,3 +148,7 @@ public class SettlementService implements ServicesInterface<SettlementResponseDT
         );
     }
 }
+
+
+// !! Direction. Verify that the splits query sums what paidBy owes paidTo, meaning splits where the split’s user is the settlement payer and the expense’s payer is the settlement payee. Reversing it would be a silent logic error.
+// !! Concurrency. Two simultaneous settlements can both pass the overpayment check. Low priority here, but worth a note in your report.

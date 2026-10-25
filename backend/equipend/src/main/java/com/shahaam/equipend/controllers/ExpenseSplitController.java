@@ -36,27 +36,28 @@ public class ExpenseSplitController {
     @GetMapping({"expense/{expenseId}/user/{userId}"})
     public ResponseEntity<ExpenseSplitResponseDTO> getSplit(
         @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
-        String expenseId,
+        UUID expenseId,
         @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
-        String userId
+        UUID userId
     ) {
-        return ResponseEntity.ok(ess.get(UUID.fromString(expenseId), UUID.fromString(userId)));
+        return ResponseEntity.ok(ess.get(expenseId, userId));
     }
     @GetMapping("/expense/{id}")
     public ResponseEntity<List<ExpenseSplitResponseDTO>> getSplitByExpense(
         @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
-        String id
+        UUID id
     ) {
-        return ResponseEntity.ok(ess.getByExpense(UUID.fromString(id)));
+        return ResponseEntity.ok(ess.getByExpense(id));
     }
     @GetMapping("/user/{id}")
     public ResponseEntity<List<ExpenseSplitResponseDTO>> getSplitByUser(
         @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
-        String id
+        UUID id
     ) {
-        return ResponseEntity.ok(ess.getByUser(UUID.fromString(id)));
+        return ResponseEntity.ok(ess.getByUser(id));
     }
 
+    // DEPRECATED: Restricted
     @PostMapping
     public ResponseEntity<ExpenseSplitResponseDTO> createSplit(
         @RequestBody @Valid ExpenseSplitRequestDTO req) {
@@ -65,8 +66,11 @@ public class ExpenseSplitController {
         String expenseId = res.expense().toString();
         String userId = res.user().toString();
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("expense/{expenseId}/user/{userId}")
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/expense/{expenseId}/user/{userId}")
         .buildAndExpand(expenseId, userId).toUri();
         return ResponseEntity.created(location).body(res);
     }
 }
+
+
+// ?? Review: POST /member lets anyone add anyone to any group. Likewise, createdBy and paidBy come from the request body, so a caller can impersonate another user. Once your auth is wired in, derive the acting user from the authenticated principal.

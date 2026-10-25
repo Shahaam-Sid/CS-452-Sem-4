@@ -19,14 +19,16 @@ public interface ExpenseSplitsRepository extends JpaRepository<ExpenseSplit, Exp
 
     List<ExpenseSplit> findByUser_UserID(UUID userID);
 
-   @Query(value = """
-    SELECT COALESCE(SUM(es.share_amount), 0)
-    FROM expenses e
-    JOIN expense_splits es ON e.expense_id = es.expense_id
-    WHERE e.paid_by = :payer
-      AND es.user_id = :receiver
-    """, nativeQuery = true)
-BigDecimal allRecordedSplitsBetween(@Param("payer") UUID payer,
-                               @Param("receiver") UUID receiver);
+    @Query(value = """
+        SELECT COALESCE(SUM(es.share_amount), 0)
+        FROM expenses e
+        JOIN expense_splits es ON e.expense_id = es.expense_id
+        WHERE e.group_id = :groupId
+          AND e.paid_by = :expensePayer
+          AND es.user_id = :debtor
+        """, nativeQuery = true)
+    BigDecimal allRecordedSplitsBetween(@Param("groupId") UUID groupId,
+                                        @Param("expensePayer") UUID expensePayer,
+                                        @Param("debtor") UUID debtor);
 
 }

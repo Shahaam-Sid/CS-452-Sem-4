@@ -35,7 +35,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
         UserNotFoundException.class,
         MemberNotInGroupException.class,
-        RecordNotFoundException.class
+        RecordNotFoundException.class,
+        DomainNotFoundException.class,
+        DomainNullException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(
         RuntimeException ex,
@@ -49,7 +51,8 @@ public class GlobalExceptionHandler {
     }
  
     @ExceptionHandler({
-        UniqueIdentifierAlreaydExistsException.class
+        UniqueIdentifierAlreaydExistsException.class,
+        UserConflictException.class
     })
     public ResponseEntity<ErrorResponse> handleConflict(
         RuntimeException ex,

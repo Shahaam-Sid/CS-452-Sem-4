@@ -35,25 +35,25 @@ public class GroupMemberController {
     @GetMapping("/group/{groupId}/user/{userId}")
     public ResponseEntity<GroupMemberResponseDTO> getMember(
         @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
-        String groupId,
+        UUID groupId,
         @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
-        String userId
+        UUID userId
     ) {
-        return ResponseEntity.ok(gms.get(UUID.fromString(groupId), UUID.fromString(userId)));
+        return ResponseEntity.ok(gms.get(groupId, userId));
     }
     @GetMapping("/group/{id}")
     public ResponseEntity<List<GroupMemberResponseDTO>> getByGroup(
         @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
-        String id
+        UUID id
     ) {
-        return ResponseEntity.ok(gms.getByGroup(UUID.fromString(id)));
+        return ResponseEntity.ok(gms.getByGroup(id));
     }
     @GetMapping("/user/{id}")
     public ResponseEntity<List<GroupMemberResponseDTO>> getByUser(
         @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
-        String id
+        UUID id
     ) {
-        return ResponseEntity.ok(gms.getByUser(UUID.fromString(id)));
+        return ResponseEntity.ok(gms.getByUser(id));
     }
     @PostMapping
     public ResponseEntity<GroupMemberResponseDTO> createMember(

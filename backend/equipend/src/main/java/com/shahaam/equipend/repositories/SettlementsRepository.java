@@ -24,9 +24,14 @@ public interface SettlementsRepository extends JpaRepository<Settlement, UUID> {
 
     List<Settlement> findByGroup_GroupIDAndPaidBy_UserID(UUID groupID, UUID userID);
 
-    @Query(
-        value = "SELECT COALESCE(SUM(amount), 0) FROM settlement WHERE paid_by = :paidBy AND paid_to = :paidTo",
-        nativeQuery = true
-    )
-    BigDecimal allRecordedSettlementBetween(@Param("paidBy") UUID paidBy, @Param("paidTo") UUID paidTo);
+    @Query(value = """
+        SELECT COALESCE(SUM(amount), 0)
+        FROM settlement
+        WHERE group_id = :groupId
+        AND paid_by = :paidBy
+        AND paid_to = :paidTo
+        """, nativeQuery = true)
+    BigDecimal allRecordedSettlementBetween(@Param("groupId") UUID groupId,
+                                            @Param("paidBy") UUID paidBy,
+                                            @Param("paidTo") UUID paidTo);
 }

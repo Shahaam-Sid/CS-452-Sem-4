@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.shahaam.equipend.auth.User;
 import com.shahaam.equipend.auth.UserRepository;
@@ -26,6 +27,8 @@ public class ExpenseSplitService {
     private final UserRepository userRepo;
     private final ExpensesRepository expRepo;
 
+    // DEPRECATED: Restricted
+    @Transactional 
     public ExpenseSplitResponseDTO add(ExpenseSplitRequestDTO req) {
 
         if(
@@ -45,6 +48,7 @@ public class ExpenseSplitService {
         return mapToExpenseSplitResponseDTO(expenseSplit);
     }
 
+    @Transactional(readOnly = true)
     public ExpenseSplitResponseDTO get(UUID expenseID, UUID userID) {
 
         ExpenseSplit expenseSplit = expSplitRepo.findById(new ExpenseSplitID(expenseID, userID))

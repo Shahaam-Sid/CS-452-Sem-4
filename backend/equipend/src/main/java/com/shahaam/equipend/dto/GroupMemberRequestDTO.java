@@ -13,6 +13,5 @@ public record GroupMemberRequestDTO(
     @NotNull(message = "Group cannot be Null")
     UUID group,
 
-    @NotNull(message = "Joined At cannot be Null")
     Instant joinedAt
 ) {}

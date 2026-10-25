@@ -10,6 +10,7 @@ import org.hibernate.type.SqlTypes;
 
 import com.shahaam.equipend.auth.User;
 import com.shahaam.equipend.exceptions.InvalidAmountException;
+import com.shahaam.equipend.exceptions.UserConflictException;
 import com.shahaam.equipend.utils.UtilityMethods;
 import com.shahaam.equipend.utils.ValidationsMethods;
 
@@ -88,8 +89,8 @@ public class Settlement {
         }
     }
     public void setAmount(BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.ZERO) < 0)
-            throw new InvalidAmountException("Settlement Amount cannot be negative");
+        if (amount.compareTo(BigDecimal.ZERO) <= 0)
+            throw new InvalidAmountException("Settlement Amount cannot be <= 0");
 
         this.amount = amount;
     }
@@ -101,6 +102,7 @@ public class Settlement {
     }
     public void setPaidBy(User user) {
         ValidationsMethods.checkNullObject(user, "User paying cannot be null");
+        if (user.equals(this.paidTo)) throw new UserConflictException();
 
         this.paidBy = user;
     }
