@@ -3,12 +3,14 @@ import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import Alert from "../ui/Alert";
 import MemberPicker from "../forms/MemberPicker";
+import useToast from "../../hooks/useToast";
 import { useAddMember } from "../../hooks/useGroups";
 
 export default function AddMemberModal({ open, onClose, groupId, existingMemberIds = [] }) {
   const [selected, setSelected] = useState([]);
   const [error, setError] = useState("");
   const addMember = useAddMember(groupId);
+  const toast = useToast();
 
   const close = () => {
     setSelected([]);
@@ -20,6 +22,7 @@ export default function AddMemberModal({ open, onClose, groupId, existingMemberI
     setError("");
     try {
       await addMember.mutateAsync(selected[0].id);
+      toast.success("Member added");
       close();
     } catch (e) {
       setError(e.userMessage ?? e.message);

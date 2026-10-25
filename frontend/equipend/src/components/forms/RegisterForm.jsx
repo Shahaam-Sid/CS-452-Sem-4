@@ -51,18 +51,19 @@ export default function RegisterForm({
         error={errors.fullName?.message}
         {...register("fullName", {
           required: "Enter your full name",
-          minLength: { value: 2, message: "Name is too short" },
+          minLength: { value: 3, message: "Name must be at least 3 characters" },
+          maxLength: { value: 100, message: "Name must be at most 100 characters" },
         })}
       />
 
       <Input
         label="Username"
         autoComplete="username"
-        hint="Letters, numbers and underscores, 3-20 characters"
+        hint="Letters, numbers and underscores, 3-50 characters"
         error={errors.username?.message}
         {...register("username", {
           required: "Choose a username",
-          pattern: { value: /^[a-zA-Z0-9_]{3,20}$/, message: "3-20 letters, numbers or underscores" },
+          pattern: { value: /^[a-zA-Z0-9_]{3,50}$/, message: "3-50 letters, numbers or underscores" },
         })}
       />
 
@@ -73,6 +74,8 @@ export default function RegisterForm({
         error={errors.email?.message}
         {...register("email", {
           required: "Enter your email",
+          minLength: { value: 5, message: "Email is too short" },
+          maxLength: { value: 128, message: "Email must be at most 128 characters" },
           pattern: { value: /^\S+@\S+\.\S+$/, message: "Enter a valid email address" },
         })}
       />
@@ -107,6 +110,7 @@ export default function RegisterForm({
         {...register("password", {
           required: "Choose a password",
           minLength: { value: minPasswordLength, message: `At least ${minPasswordLength} characters` },
+          maxLength: { value: 128, message: "At most 128 characters" },
         })}
       />
 

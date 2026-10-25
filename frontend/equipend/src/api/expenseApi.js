@@ -70,3 +70,9 @@ export async function createExpense(payload) {
   const { data } = await api.post(ENDPOINTS.create, payload);
   return normalizeExpense(data);
 }
+
+// All splits of one user across every group (used by balances).
+export async function getMySplits(userId) {
+  const { data } = await api.get(ENDPOINTS.splitsByUser(userId));
+  return unwrapList(data).map(normalizeSplit);
+}

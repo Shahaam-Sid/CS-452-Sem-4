@@ -10,6 +10,7 @@ import GroupCard from "../components/groups/GroupCard";
 import CreateGroupForm from "../components/forms/CreateGroupForm";
 import useAuth from "../hooks/useAuth";
 import { useCreateGroup, useMyGroups } from "../hooks/useGroups";
+import useToast from "../hooks/useToast";
 
 export default function Groups() {
   const [creating, setCreating] = useState(false);
@@ -17,10 +18,12 @@ export default function Groups() {
   const { user } = useAuth();
   const { data: groups, isPending, isError, error, refetch } = useMyGroups();
   const createGroup = useCreateGroup();
+  const toast = useToast();
 
   const handleCreate = async (values) => {
     // errors surface inside the form; the backend adds the creator as the first member
     const group = await createGroup.mutateAsync({ ...values, createdBy: user.id });
+    toast.success("Group created");
     setCreating(false);
     if (group.id) navigate(`/dashboard/groups/${group.id}`);
   };

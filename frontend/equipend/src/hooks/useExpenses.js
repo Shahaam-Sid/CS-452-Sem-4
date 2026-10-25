@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createExpense, getExpensesPaidBy, getGroupExpenses, getMyShares } from "../api/expensesApi";
 import useAuth from "./useAuth";
+import { balanceKeys } from "./useBalances";
 
 export const expenseKeys = {
   all: ["expenses"],
@@ -38,7 +39,10 @@ export function useCreateExpense() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: createExpense,
-    // "expenses" is a prefix: refreshes the group list and both dedicated-page tabs
-    onSuccess: () => qc.invalidateQueries({ queryKey: expenseKeys.all }),
+    onSuccess: () => {
+      // "expenses" is a prefix: refreshes the group list and both dedicated-page tabs
+      qc.invalidateQueries({ queryKey: expenseKeys.all });
+      qc.invalidateQueries({ queryKey: balanceKeys.all });
+    },
   });
 }

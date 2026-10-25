@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "./auth-context";
 import { TOKEN_KEY, UNAUTHORIZED_EVENT } from "../../api/axios";
+import useToast from "../../hooks/useToast";
 
 const USER_KEY = "user";
 const MAX_TIMEOUT = 2 ** 31 - 1; // setTimeout overflows above this
@@ -46,6 +47,7 @@ function readStoredAuth() {
 
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [auth, setAuth] = useState(readStoredAuth);
 
   const logout = useCallback(() => {
@@ -67,19 +69,26 @@ export function AuthProvider({ children }) {
     setAuth({ token: response.token, user, exp: claims.exp });
   }, []);
 
+  // The session ended without the user asking (token expired or rejected by the server).
+  const endSession = useCallback(() => {
+    if (!localStorage.getItem(TOKEN_KEY)) return; // already logged out; ignore late events
+    logout();
+    toast.info("Your session has expired. Please log in again.");
+  }, [logout, toast]);
+
   // schedule an auto-logout for the moment the token expires
   useEffect(() => {
     if (!auth.exp) return;
     const ms = Math.min(Math.max(0, auth.exp * 1000 - Date.now()), MAX_TIMEOUT);
-    const id = setTimeout(logout, ms);
+    const id = setTimeout(endSession, ms);
     return () => clearTimeout(id);
-  }, [auth.exp, logout]);
+  }, [auth.exp, endSession]);
 
   // the API layer fires this event when the server rejects our token
   useEffect(() => {
-    window.addEventListener(UNAUTHORIZED_EVENT, logout);
-    return () => window.removeEventListener(UNAUTHORIZED_EVENT, logout);
-  }, [logout]);
+    window.addEventListener(UNAUTHORIZED_EVENT, endSession);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, endSession);
+  }, [endSession]);
 
   const value = useMemo(
     () => ({ user: auth.user, token: auth.token, isAuthenticated: !!auth.token, login, logout }),

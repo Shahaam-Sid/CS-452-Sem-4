@@ -13,10 +13,12 @@ import ExpenseList from "../components/expenses/ExpenseList";
 import AddExpenseModal from "../components/expenses/AddExpenseModal";
 import SettlementList from "../components/settlements/SettlementList";
 import SettleUpModal from "../components/settlements/SettleUpModal";
+import BalanceList from "../components/balances/BalanceList";
 import useAuth from "../hooks/useAuth";
 import { useGroup, useGroupMembers } from "../hooks/useGroups";
 import { useGroupExpenses } from "../hooks/useExpenses";
 import { useGroupSettlements } from "../hooks/useSettlements";
+import { useGroupBalances } from "../hooks/useBalances";
 import { formatCurrencyCode, formatDate } from "../utils/format";
 
 export default function GroupDetail() {
@@ -29,6 +31,7 @@ export default function GroupDetail() {
   const members = useGroupMembers(groupId);
   const expenses = useGroupExpenses(groupId);
   const settlements = useGroupSettlements(groupId);
+  const balances = useGroupBalances(group.data); // waits until the group has loaded
 
   const back = (
     <Link
@@ -94,6 +97,28 @@ export default function GroupDetail() {
           </div>
         </Card>
       </div>
+
+      <Card title="Your balances">
+        {balances.isPending && (
+          <div className="flex justify-center py-6 text-brand-600">
+            <Spinner />
+          </div>
+        )}
+        {balances.isError && (
+          <Alert variant="error" title="Could not calculate balances">
+            <p>{balances.error.userMessage}</p>
+            <Button size="sm" variant="outline" className="mt-2" onClick={() => balances.refetch()}>
+              Try again
+            </Button>
+          </Alert>
+        )}
+        {balances.data && (
+          <BalanceList
+            rows={balances.data}
+            emptyText="No balances in this group yet. Expenses and payments that involve you will show up here."
+          />
+        )}
+      </Card>
 
       <Card
         title="Expenses"

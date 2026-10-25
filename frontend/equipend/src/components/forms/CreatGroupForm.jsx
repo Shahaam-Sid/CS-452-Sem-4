@@ -49,7 +49,6 @@ export default function CreateGroupForm({
         error={errors.name?.message}
         {...register("name", {
           required: "Enter a group name",
-          minLength: { value: 2, message: "Name is too short" },
           maxLength: { value: 50, message: "Keep it under 50 characters" },
         })}
       />

@@ -33,7 +33,11 @@ export default function LoginForm({ onSubmit, defaultValues, submitLabel = "Log 
         autoComplete="username"
         leftIcon={<User size={16} />}
         error={errors.identifier?.message}
-        {...register("identifier", { required: "Enter your username or email" })}
+        {...register("identifier", {
+          required: "Enter your username or email",
+          minLength: { value: 3, message: "At least 3 characters" },
+          maxLength: { value: 128, message: "At most 128 characters" },
+        })}
       />
 
       <Input
@@ -42,7 +46,11 @@ export default function LoginForm({ onSubmit, defaultValues, submitLabel = "Log 
         autoComplete="current-password"
         leftIcon={<Lock size={16} />}
         error={errors.password?.message}
-        {...register("password", { required: "Enter your password" })}
+        {...register("password", {
+          required: "Enter your password",
+          minLength: { value: 8, message: "At least 8 characters" },
+          maxLength: { value: 128, message: "At most 128 characters" },
+        })}
       />
 
       <Button type="submit" fullWidth loading={isSubmitting}>
