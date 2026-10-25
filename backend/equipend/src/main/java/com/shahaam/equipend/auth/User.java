@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,11 +17,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import com.shahaam.equipend.exceptions.InvalidAccountCreationTime;
 import com.shahaam.equipend.exceptions.InvalidDOBException;
+import com.shahaam.equipend.exceptions.InvalidDomainException;
+import com.shahaam.equipend.utils.AppConstants;
 import com.shahaam.equipend.utils.UtilityMethods;
 import com.shahaam.equipend.utils.ValidationsMethods;
 
@@ -28,11 +31,13 @@ import com.shahaam.equipend.utils.ValidationsMethods;
 @Table(name = "users")
 @AllArgsConstructor 
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
 
     @Getter
     @Id
     @JdbcTypeCode(SqlTypes.BINARY)
+    @EqualsAndHashCode.Include
     @Column(name = "user_id", nullable = false, unique = true, columnDefinition = "BINARY(16)")
     private UUID userID;
     
@@ -40,11 +45,13 @@ public class User implements UserDetails {
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
+    @EqualsAndHashCode.Include
     @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
 
     @Getter
     @Column(name = "email", nullable = false, unique = true, length = 255)
+    @EqualsAndHashCode.Include
     private String email;
 
     @Column(name = "password_hash", nullable = false)
@@ -59,6 +66,7 @@ public class User implements UserDetails {
     private String country;
 
     @Getter
+    @CreationTimestamp 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -73,7 +81,6 @@ public class User implements UserDetails {
         setPasswordHash(passwordHash);
         setDob(dob);
         setCountry(country);
-        setCurrentCreatedAt();
     }
 
     public void setGeneratedUserID() {
@@ -122,17 +129,17 @@ public class User implements UserDetails {
     public void setCountry(String country) {
         ValidationsMethods.checkNullString(country, "Country");
         ValidationsMethods.checkLengthString(country, 3, 50, "Country");
+        country = country.toLowerCase();
+
+        if (!AppConstants.COUNTRIES.contains(country))
+            throw new InvalidDomainException("Country", country);
 
         this.country = country;
     }
     public void setCreatedAt(Instant createdAt) {
         ValidationsMethods.checkNullObject(createdAt, "Created At Timestamp");
-        if (createdAt.isAfter(Instant.now()))
-            throw new InvalidAccountCreationTime("Account cannot be created in th future");
+        ValidationsMethods.checkTimeStamp(createdAt, Instant.now(), "Account cannot be created in the Future");
         this.createdAt = createdAt;
-    }
-    public void setCurrentCreatedAt() {
-        this.createdAt = Instant.now();
     }
     public void setPasswordHash(String passwordHash) {
         ValidationsMethods.checkNullString(passwordHash, "Password Hash");
@@ -168,3 +175,4 @@ public class User implements UserDetails {
         return passwordHash;
     }
 }
+// TODO: implemenmt Country and Currency Contains check from constants

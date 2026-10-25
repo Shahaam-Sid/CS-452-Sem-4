@@ -1,6 +1,7 @@
 package com.shahaam.equipend.auth;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.shahaam.equipend.config.JwtService;
+import com.shahaam.equipend.exceptions.RecordNotFoundException;
 import com.shahaam.equipend.exceptions.UniqueIdentifierAlreaydExistsException;
+import com.shahaam.equipend.exceptions.UserNotFoundException;
 import com.shahaam.equipend.utils.ValidationsMethods;
 
 import lombok.RequiredArgsConstructor;
@@ -52,6 +55,7 @@ public class AuthService {
         );
     }
 
+    @Transactional(readOnly = true)
     public AuthenticationResponseDTO authenticate(AuthenticateRequestDTO req) {
 
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -68,6 +72,7 @@ public class AuthService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<SearchResultsDTO> lookUpSearch(String query) {
 
         if (query == null || query.trim().length() < MIN_SEARCH_LENGTH)
@@ -82,6 +87,15 @@ public class AuthService {
         return searchResults.stream().map(this::mapToSearchResultsDTO).toList();
     }
 
+    @Transactional(readOnly = false)
+    public SearchResultsDTO searchById(UUID id) {
+        ValidationsMethods.checkNullObject(id, "User ID");
+        
+        return mapToSearchResultsDTO(userRepo.findById(id).orElseThrow(
+            () -> new RecordNotFoundException("User", id.toString())
+        ));
+    }
+
     protected User mapFromRegisterRequestDTO(RegisterRequestDTO req) {
         ValidationsMethods.validatePassword(req.password());
         return new User(
@@ -90,7 +104,7 @@ public class AuthService {
         );
     }
     protected SearchResultsDTO mapToSearchResultsDTO(User user) {
-        return new SearchResultsDTO(user.getUsername(), user.getFullName());
+        return new SearchResultsDTO(user.getUserID(), user.getUsername(), user.getFullName());
     }
     private String clean(String value) {
         return (value == null) ? null : value.trim();

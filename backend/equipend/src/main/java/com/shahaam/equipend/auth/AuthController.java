@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("api/v1/auth")
-@RequiredArgsConstructor  
+@RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
 
@@ -29,5 +29,5 @@ public class AuthController {
         @RequestBody @Valid AuthenticateRequestDTO req
     ) {        
         return ResponseEntity.ok(authService.authenticate(req));
-    }   
+    }
 }

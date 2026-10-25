@@ -1,19 +1,24 @@
 package com.shahaam.equipend.utils;
 
+import java.time.Instant;
+
+import com.shahaam.equipend.exceptions.DomainNullException;
+import com.shahaam.equipend.exceptions.InvalidDomainException;
 import com.shahaam.equipend.exceptions.InvalidEmailException;
 import com.shahaam.equipend.exceptions.InvalidPasswordException;
+import com.shahaam.equipend.exceptions.InvalidTimeException;
 
 public class ValidationsMethods {
     public static void checkNullObject(Object obj, String field) {
-        if (obj == null) throw new IllegalArgumentException(field + " cannot be null");
+        if (obj == null) throw new DomainNullException(field);
     }
-    public static void checkNullString(String string, String field) throws IllegalArgumentException {
+    public static void checkNullString(String string, String field) {
         if (string == null || string.isEmpty() || string.isBlank())
-            throw new IllegalArgumentException(field + " cannot be null or empty");
+            throw new DomainNullException(field);
     }
-    public static void checkLengthString(String string, int lengthMin, int lengthMax, String field) throws IllegalArgumentException {
+    public static void checkLengthString(String string, int lengthMin, int lengthMax, String field) {
         if (string.length() < lengthMin || string.length() > lengthMax)
-            throw new IllegalArgumentException("Allowed Length for " + field + ": " + lengthMin + " - " + lengthMax);
+            throw new InvalidDomainException("Allowed Length for " + field + ": " + lengthMin + " - " + lengthMax);
     }
     public static void validateEmail(String email) {
         String regex = "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$";
@@ -52,11 +57,16 @@ public class ValidationsMethods {
         for (char c : str.toUpperCase().toCharArray()) {
             
             if ((c < 'A' || c > 'Z') && c != ' ') 
-                throw new IllegalArgumentException(field + " must only contain Alphabets");
+                throw new InvalidDomainException(field + " must only contain Alphabets");
         }
     }
     public static void isAlphaNumericUnderscoreDot(String str, String field) {
         if (!str.matches("^[a-zA-Z0-9_.]+$"))
-            throw new IllegalArgumentException(field + " must only contain AlphaNumric Characters, '_' or '.'");
+            throw new InvalidDomainException(field + " must only contain AlphaNumric Characters, '_' or '.'");
+    }
+
+    public static void checkTimeStamp(Instant time, Instant checkAgainst, String msg) {
+        if (time.isAfter(checkAgainst))
+            throw new InvalidTimeException(msg);
     }
 }

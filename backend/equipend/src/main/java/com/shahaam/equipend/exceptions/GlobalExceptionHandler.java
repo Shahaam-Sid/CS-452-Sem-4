@@ -17,7 +17,10 @@ import tools.jackson.databind.exc.InvalidFormatException;
 public class GlobalExceptionHandler {
 
 
-    @ExceptionHandler(InvalidPasswordException.class)
+    @ExceptionHandler({
+        InvalidPasswordException.class,
+        InvalidEmailException.class,
+    })
     public ResponseEntity<ErrorResponse> handleUnauthorized(
         RuntimeException ex,
         HttpServletRequest request) {
@@ -30,7 +33,11 @@ public class GlobalExceptionHandler {
     }
     
     @ExceptionHandler({
-        UserNotFoundException.class
+        UserNotFoundException.class,
+        MemberNotInGroupException.class,
+        RecordNotFoundException.class,
+        DomainNotFoundException.class,
+        DomainNullException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(
         RuntimeException ex,
@@ -44,7 +51,8 @@ public class GlobalExceptionHandler {
     }
  
     @ExceptionHandler({
-        UniqueIdentifierAlreaydExistsException.class
+        UniqueIdentifierAlreaydExistsException.class,
+        UserConflictException.class
     })
     public ResponseEntity<ErrorResponse> handleConflict(
         RuntimeException ex,
@@ -58,7 +66,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-        IllegalArgumentException.class
+        IllegalArgumentException.class,
+        AmountMismatchExpection.class,
+        InvalidAmountException.class,
+        InvalidDOBException.class,
+        InvalidDomainException.class,
+        InvalidTimeException.class
     })
     public ResponseEntity<ErrorResponse> handleBusinessRule(
         RuntimeException ex,
@@ -69,6 +82,20 @@ public class GlobalExceptionHandler {
             );
 
         return ResponseEntity.status(422).body(body);
+    }
+    @ExceptionHandler({
+        UpdatingServiceNotApplicableException.class,
+        UnsupportedOperationException.class
+    })
+    public ResponseEntity<ErrorResponse> handleUnsupportedOperation(
+        RuntimeException ex,
+        HttpServletRequest request
+    ) {
+        ErrorResponse body = new ErrorResponse(
+            501, "Unsupported Operation", ex.getMessage(), request.getRequestURI()
+        );
+
+        return ResponseEntity.status(501).body(body);
     }
 
     // Spring's validation exception — unrelated, needs its own handler
