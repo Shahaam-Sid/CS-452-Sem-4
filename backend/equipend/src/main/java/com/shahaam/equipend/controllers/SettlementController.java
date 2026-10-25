@@ -15,8 +15,6 @@ import com.shahaam.equipend.dto.SettlementResponseDTO;
 import com.shahaam.equipend.services.SettlementService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,44 +32,44 @@ public class SettlementController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SettlementResponseDTO> getSettlement(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(ss.get(id));
     }
     @GetMapping("/count-by-group/{id}")
     public ResponseEntity<Long> countGroupSettlements(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(ss.countGroupSettlements(id));
     }
     @GetMapping("/group/{id}")
     public ResponseEntity<List<SettlementResponseDTO>> getGroupSettlements(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(ss.getGroupSettlements(id));
     }
     @GetMapping("payee/{id}")
     public ResponseEntity<List<SettlementResponseDTO>> getByPayee(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(ss.getByPaidTo(id));
     }
     @GetMapping("/payer/{id}")
     public ResponseEntity<List<SettlementResponseDTO>> getByPayer(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(ss.getByPayer(id));
     }
     @GetMapping("/group/{groupId}/payee/{userId}")
     public ResponseEntity<List<SettlementResponseDTO>> getByPayee(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID groupId,
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID userId
     ) {
         return ResponseEntity.ok(ss.getByGroupPaidTo(
@@ -80,9 +78,9 @@ public class SettlementController {
     }
     @GetMapping("/group/{groupId}/payer/{userId}")
     public ResponseEntity<List<SettlementResponseDTO>> getByPayer(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID groupId,
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID userId
     ) {
         return ResponseEntity.ok(ss.getByGroupPaidBy(

@@ -17,8 +17,6 @@ import com.shahaam.equipend.dto.ExpenseResponseDTO;
 import com.shahaam.equipend.services.ExpenseService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,35 +32,35 @@ public class ExpenseController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ExpenseResponseDTO> getExpense(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(es.get(id));
     }
     @GetMapping("/creator/{id}")
     public ResponseEntity<List<ExpenseResponseDTO>> getExpensesByCreator(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(es.getExpensesByCreator(id));
     }
     @GetMapping("/payer/{id}")
     public ResponseEntity<List<ExpenseResponseDTO>> getExpensesByPayer(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(es.getExpensesByPayer(id));
     }
     @GetMapping("/group/{id}")
     public ResponseEntity<List<ExpenseResponseDTO>> getExpensesByGroup(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(es.getGroupExpenses(id));
     }
     @GetMapping("/count-by-group/{id}")
     public ResponseEntity<Long> getCountByGroup(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(es.countGroupExpenses(id));

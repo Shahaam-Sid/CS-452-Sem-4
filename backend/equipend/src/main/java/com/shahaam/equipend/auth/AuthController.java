@@ -29,5 +29,5 @@ public class AuthController {
         @RequestBody @Valid AuthenticateRequestDTO req
     ) {        
         return ResponseEntity.ok(authService.authenticate(req));
-    }   
+    }
 }

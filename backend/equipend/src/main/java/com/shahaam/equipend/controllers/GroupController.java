@@ -9,8 +9,6 @@ import com.shahaam.equipend.dto.GroupResponseDTO;
 import com.shahaam.equipend.services.GroupService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
@@ -34,7 +32,7 @@ public class GroupController {
 
     @GetMapping("/{id}")
     public ResponseEntity<GroupResponseDTO> getGroup(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(gs.get(id));

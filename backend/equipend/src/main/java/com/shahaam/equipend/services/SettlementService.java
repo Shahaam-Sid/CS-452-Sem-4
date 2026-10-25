@@ -11,7 +11,6 @@ import com.shahaam.equipend.auth.User;
 import com.shahaam.equipend.auth.UserRepository;
 import com.shahaam.equipend.dto.SettlementRequestDTO;
 import com.shahaam.equipend.dto.SettlementResponseDTO;
-import com.shahaam.equipend.exceptions.AmountMismatchExpection;
 import com.shahaam.equipend.exceptions.InvalidAmountException;
 import com.shahaam.equipend.exceptions.MemberNotInGroupException;
 import com.shahaam.equipend.exceptions.RecordNotFoundException;

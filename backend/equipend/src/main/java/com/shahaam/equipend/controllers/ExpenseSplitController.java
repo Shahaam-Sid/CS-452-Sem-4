@@ -15,8 +15,6 @@ import com.shahaam.equipend.dto.ExpenseSplitResponseDTO;
 import com.shahaam.equipend.services.ExpenseSplitService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,23 +33,23 @@ public class ExpenseSplitController {
 
     @GetMapping({"expense/{expenseId}/user/{userId}"})
     public ResponseEntity<ExpenseSplitResponseDTO> getSplit(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID expenseId,
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID userId
     ) {
         return ResponseEntity.ok(ess.get(expenseId, userId));
     }
     @GetMapping("/expense/{id}")
     public ResponseEntity<List<ExpenseSplitResponseDTO>> getSplitByExpense(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(ess.getByExpense(id));
     }
     @GetMapping("/user/{id}")
     public ResponseEntity<List<ExpenseSplitResponseDTO>> getSplitByUser(
-        @PathVariable @NotBlank @Size(min = 36, max = 36, message = "Invalid UUID")
+        @PathVariable 
         UUID id
     ) {
         return ResponseEntity.ok(ess.getByUser(id));
