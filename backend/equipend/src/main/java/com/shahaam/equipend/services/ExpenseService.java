@@ -64,7 +64,7 @@ public class ExpenseService implements ServicesInterface<ExpenseResponseDTO, Exp
         if (!grpMemRepo.existsByGroup_GroupIDAndUser_UserID(req.groupID(), req.createdBy()))
             throw new MemberNotInGroupException(req.groupID().toString(), req.createdBy().toString());
 
-        if (!grpMemRepo.existsByGroup_GroupIDAndUser_UserID(req.groupID(), req.createdBy()))
+        if (!grpMemRepo.existsByGroup_GroupIDAndUser_UserID(req.groupID(), req.paidBy()))
             throw new MemberNotInGroupException(req.groupID().toString(), req.paidBy().toString());
 
         if (req.amount().compareTo(BigDecimal.ZERO) <= 0)
@@ -86,7 +86,7 @@ public class ExpenseService implements ServicesInterface<ExpenseResponseDTO, Exp
                 throw new DomainNullException("Participant Share");
 
             boolean allPositive = req.participantShare().values().stream().allMatch(
-                amount -> amount.compareTo(BigDecimal.ZERO) <= 0
+                amount -> amount.compareTo(BigDecimal.ZERO) > 0
             );
             if (!allPositive) throw new InvalidAmountException("Participant Amount cannot be <= 0");
 

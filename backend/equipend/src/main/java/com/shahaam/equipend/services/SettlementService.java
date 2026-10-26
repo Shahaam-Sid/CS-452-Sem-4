@@ -147,7 +147,3 @@ public class SettlementService implements ServicesInterface<SettlementResponseDT
         );
     }
 }
-
-
-// !! Direction. Verify that the splits query sums what paidBy owes paidTo, meaning splits where the split’s user is the settlement payer and the expense’s payer is the settlement payee. Reversing it would be a silent logic error.
-// !! Concurrency. Two simultaneous settlements can both pass the overpayment check. Low priority here, but worth a note in your report.

@@ -68,7 +68,3 @@ public class GroupService implements ServicesInterface<GroupResponseDTO, GroupRe
         );
     }
 }
-
-
-
-// TODO: Do required indexing on all schemas

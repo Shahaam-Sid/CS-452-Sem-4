@@ -112,5 +112,4 @@ public class UtilityMethods {
 
         return shares;
     }
-    // => Percentage remainder goes to whichever participant the hash map iterates first, which is non-deterministic and may be the payer, whose share is then dropped. Give the remainder to the payer, as the equal split does, so behavior is consistent and predictable.
 }

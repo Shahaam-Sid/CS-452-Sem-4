@@ -104,6 +104,3 @@ public class Group {
         this.createdAt = createdAt;
     }
 }
-
-
-// TODO: update DB README as name varchar updates to 50 characters

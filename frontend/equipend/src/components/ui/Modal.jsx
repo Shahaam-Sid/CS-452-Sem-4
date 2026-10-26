@@ -40,9 +40,13 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={cn("relative w-full rounded-xl bg-white shadow-xl", sizes[size], className)}
+        className={cn(
+          "relative flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded-xl bg-white shadow-xl",
+          sizes[size],
+          className
+        )}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-4">
           <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
@@ -52,8 +56,12 @@ export default function Modal({
             <X size={18} />
           </button>
         </div>
-        <div className="px-5 py-4">{children}</div>
-        {footer && <div className="flex justify-end gap-2 border-t border-gray-100 px-5 py-3">{footer}</div>}
+
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
+
+        {footer && (
+          <div className="flex shrink-0 justify-end gap-2 border-t border-gray-100 px-5 py-3">{footer}</div>
+        )}
       </div>
     </div>,
     document.body

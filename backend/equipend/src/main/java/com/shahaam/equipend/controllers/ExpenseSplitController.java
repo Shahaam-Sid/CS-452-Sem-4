@@ -69,6 +69,3 @@ public class ExpenseSplitController {
         return ResponseEntity.created(location).body(res);
     }
 }
-
-
-// ?? Review: POST /member lets anyone add anyone to any group. Likewise, createdBy and paidBy come from the request body, so a caller can impersonate another user. Once your auth is wired in, derive the acting user from the authenticated principal.

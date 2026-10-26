@@ -175,4 +175,3 @@ public class User implements UserDetails {
         return passwordHash;
     }
 }
-// TODO: implemenmt Country and Currency Contains check from constants
