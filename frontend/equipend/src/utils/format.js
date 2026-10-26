@@ -26,3 +26,6 @@ export function formatMoney(amount, currency) {
     return `${n.toFixed(2)} ${code}`; // unknown currency code
   }
 }
+
+// amounts inside balance calculations are integer cents
+export const formatCents = (cents, currency) => formatMoney(cents / 100, currency);
