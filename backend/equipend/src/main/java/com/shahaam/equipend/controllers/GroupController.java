@@ -6,6 +6,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.shahaam.equipend.dto.GroupRequestDTO;
 import com.shahaam.equipend.dto.GroupResponseDTO;
+import com.shahaam.equipend.dto.GroupUpdateRequestDTO;
 import com.shahaam.equipend.services.GroupService;
 
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,5 +51,14 @@ public class GroupController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
         
         return ResponseEntity.created(location).body(res);
+    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<GroupResponseDTO> updateGroup(
+        @PathVariable UUID id,
+        @RequestBody @Valid GroupUpdateRequestDTO req
+    ) {
+        GroupResponseDTO res = gs.update(req, id);
+
+        return ResponseEntity.ok(res);
     }
 }

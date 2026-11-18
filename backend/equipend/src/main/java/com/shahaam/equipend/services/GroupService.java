@@ -9,6 +9,8 @@ import com.shahaam.equipend.auth.User;
 import com.shahaam.equipend.auth.UserRepository;
 import com.shahaam.equipend.dto.GroupRequestDTO;
 import com.shahaam.equipend.dto.GroupResponseDTO;
+import com.shahaam.equipend.dto.GroupUpdateRequestDTO;
+import com.shahaam.equipend.exceptions.DomainNotFoundException;
 import com.shahaam.equipend.exceptions.RecordNotFoundException;
 import com.shahaam.equipend.interfaces.ServicesInterface;
 import com.shahaam.equipend.models.Group;
@@ -20,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class GroupService implements ServicesInterface<GroupResponseDTO, GroupRequestDTO, Void> {
+public class GroupService implements ServicesInterface<GroupResponseDTO, GroupRequestDTO, GroupUpdateRequestDTO> {
     private final GroupsRepository groupRepo;
     private final UserRepository userRepo;
     private final GroupMembersRepository grpMemRepo;
@@ -40,6 +42,22 @@ public class GroupService implements ServicesInterface<GroupResponseDTO, GroupRe
 
         return mapToGroupResponseDTO(group);
     }
+
+    @Override 
+    @Transactional
+    public GroupResponseDTO update(GroupUpdateRequestDTO req, UUID ID) {
+        if (req == null) throw new DomainNotFoundException("Group Update Request");
+        
+        Group group = groupRepo.findById(ID).orElseThrow(() -> new RecordNotFoundException("Group", ID.toString()));
+
+        if (req.name() != null && !req.name().isBlank())
+            group.setName(req.name());
+
+        if (req.description() != null && !req.description().isBlank())
+            group.setDescription(req.description());
+
+        return mapToGroupResponseDTO(group);
+    } 
 
     @Override
     @Transactional(readOnly = true)

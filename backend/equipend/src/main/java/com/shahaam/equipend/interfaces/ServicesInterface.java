@@ -8,7 +8,7 @@ public interface ServicesInterface<R, P, U> {
 
     public R add(P req);
     public R get(UUID id);
-    public default R update(U req) {
+    public default R update(U req, UUID identifier) {
         throw new UpdatingServiceNotApplicableException(this.getClass().getSimpleName());
     }
     public default void delete(String identier) {

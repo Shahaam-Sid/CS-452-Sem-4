@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.shahaam.equipend.config.JwtService;
 import com.shahaam.equipend.exceptions.RecordNotFoundException;
 import com.shahaam.equipend.exceptions.UniqueIdentifierAlreaydExistsException;
-import com.shahaam.equipend.exceptions.UserNotFoundException;
 import com.shahaam.equipend.utils.ValidationsMethods;
 
 import lombok.RequiredArgsConstructor;
@@ -71,7 +70,6 @@ public class AuthService {
             user.getEmail(), jwtToken
         );
     }
-
     @Transactional(readOnly = true)
     public List<SearchResultsDTO> lookUpSearch(String query) {
 
